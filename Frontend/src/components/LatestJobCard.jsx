@@ -10,7 +10,7 @@ const LatestJobCard = ({job,onClick}) => {
     <div  onClick={onClick} className="w-full max-w-sm sm:max-w-md p-5 rounded-xl border border-gray-100 bg-white shadow-md hover:shadow-xl transition-all duration-300 cursor-pointer">
       <div className="flex justify-between items-start">
         <div className="flex items-center gap-3 mt-4">
-        <Avatar className="w-10 h-10">
+        <Avatar className="w-15 h-15">
           <AvatarImage src={job?.company?.logo} />
         </Avatar>
 

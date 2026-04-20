@@ -25,7 +25,7 @@ const OnlyJobs = ({ job }) => {
       
       <div className="flex items-center gap-3 mt-4">
         <Avatar className="w-10 h-10">
-          <AvatarImage src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcThrlaPTiDvfC24xZP2MdareGEoNxolGAKWEw&s" />
+          <AvatarImage src={job?.company?.logo} />
         </Avatar>
 
         <div>

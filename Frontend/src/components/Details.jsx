@@ -16,47 +16,46 @@ import { useNavigate, useParams } from "react-router-dom";
 import { setSingleJob } from "@/redux/jobSlice";
 import { useDispatch, useSelector } from "react-redux";
 import daysAgoFunction from "./utils/postdate";
-
+import { Avatar, AvatarImage } from "./ui/avatar";
 
 const Details = () => {
-  const navigate=useNavigate();
+  const navigate = useNavigate();
   const { singlejob } = useSelector((store) => store.job);
   const { user } = useSelector((store) => store.auth);
   const isApplied = singlejob?.applications?.some(
-  (application) => application?.applicant === user?._id
-);
+    (application) => application?.applicant === user?._id,
+  );
   const [applied, setApplied] = useState(isApplied);
 
   const dispatch = useDispatch();
   const { id } = useParams();
 
   useEffect(() => {
-  if (singlejob && user) {
-    const alreadyApplied = singlejob?.applications?.some(
-      (application) =>
-        application?.applicant?.toString() === user?._id?.toString()
-    );
-
-    setApplied(alreadyApplied);
-  }
-}, [singlejob, user]);
-  const fetchJobDetails = async () => {
-    try {
-      const response = await axios.get(
-        `${user_api_end_point}/getjob/${id}`,
-        {
-          headers: {
-            Authorization: `Bearer ${localStorage.getItem("token")}`,
-          },
-        }
+    if (singlejob && user) {
+      const alreadyApplied = singlejob?.applications?.some(
+        (application) =>
+          application?.applicant?.toString() === user?._id?.toString(),
       );
 
-  if (response.data.success) {
-    dispatch(setSingleJob(response.data.Job));
-    setApplied(singlejob?.applications?.some(
-      (application) => application?.applicant === user?._id
-    ));
-  }
+      setApplied(alreadyApplied);
+    }
+  }, [singlejob, user]);
+  const fetchJobDetails = async () => {
+    try {
+      const response = await axios.get(`${user_api_end_point}/getjob/${id}`, {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem("token")}`,
+        },
+      });
+
+      if (response.data.success) {
+        dispatch(setSingleJob(response.data.Job));
+        setApplied(
+          singlejob?.applications?.some(
+            (application) => application?.applicant === user?._id,
+          ),
+        );
+      }
     } catch (error) {
       toast.error("Failed to fetch job details. Please try again later.");
     }
@@ -66,45 +65,53 @@ const Details = () => {
     fetchJobDetails();
   }, [id]);
 
-
-  const applyjob=async(jobid)=>{
+  const applyjob = async (jobid) => {
     try {
-      if(!user)
-      {
-          navigate('/login');
+      if (!user) {
+        navigate("/login");
       }
-    const resp = await axios.get(
-      `${user_api_end_point}/applyjob/${jobid}`,
-      {
+      const resp = await axios.get(`${user_api_end_point}/applyjob/${jobid}`, {
         withCredentials: true,
+      });
+
+      if (resp.data.success) {
+        toast.success(resp.data.message);
+        const updateSingleJob = {
+          ...singlejob,
+          applications: [singlejob.applications, { applicant: user._id }],
+        };
+        dispatch(setSingleJob(updateSingleJob));
+        setApplied(true);
+      } else {
+        toast.error(resp.data.message);
       }
-    );
+    } catch (error) {
+      console.error(error);
 
-    if (resp.data.success) {
-  toast.success(resp.data.message);
-  const updateSingleJob={...singlejob,applications:[singlejob.applications,{applicant:user._id}]}
-  dispatch(setSingleJob(updateSingleJob));
-  setApplied(true);
-} else {
-  toast.error(resp.data.message);
-}
-  } catch (error) {
-    console.error(error);
-
-    toast.error(
-      error.response?.data?.message || "Something went wrong"
-    );
-  }
-  }
+      toast.error(error.response?.data?.message || "Something went wrong");
+    }
+  };
   return (
     <div className="w-full flex justify-center px-4 py-6">
       <div className="w-full max-w-5xl bg-white rounded-3xl shadow-lg border border-gray-200 overflow-hidden">
         <div className="bg-linear-to-r from-blue-50 to-indigo-50 px-6 sm:px-10 py-8 border-b">
           <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-6">
             <div className="text-center lg:text-left">
-              <h1 className="text-2xl sm:text-4xl font-bold text-gray-800">
-                {singlejob?.title}
-              </h1>
+              <div className="text-center lg:text-left">
+                <div className="flex items-center justify-center gap-3">
+                  <Avatar className="w-12 h-12 overflow-hidden">
+                    <AvatarImage
+                      src={singlejob?.company?.logo}
+                      alt="Company Logo"
+                      className="w-full h-full object-cover"
+                    />
+                  </Avatar>
+
+                  <h1 className="text-2xl sm:text-4xl font-bold text-gray-800">
+                    {singlejob?.title}
+                  </h1>
+                </div>
+              </div>
 
               <div className="flex flex-wrap justify-center lg:justify-start gap-3 mt-5">
                 <Badge className="bg-blue-100 text-blue-700 hover:bg-blue-100 px-4 py-1.5 rounded-full text-sm">
@@ -126,8 +133,9 @@ const Details = () => {
 
             <div className="flex justify-center lg:justify-end">
               <Button
-                disabled={applied} isApplied={true}
-                onClick={() => applyjob(singlejob?._id,setApplied)}
+                disabled={applied}
+                isApplied={true}
+                onClick={() => applyjob(singlejob?._id, setApplied)}
                 className={`px-8 py-6 text-base rounded-xl  cursor-pointer ${
                   applied
                     ? "bg-gray-400 hover:bg-gray-400 cursor-not-allowed"
@@ -216,9 +224,7 @@ const Details = () => {
             <h3 className="text-lg font-semibold text-gray-800 mb-3">
               About This Job
             </h3>
-            <p className="text-gray-600 leading-7">
-              {singlejob?.description}
-            </p>
+            <p className="text-gray-600 leading-7">{singlejob?.description}</p>
           </div>
         </div>
       </div>

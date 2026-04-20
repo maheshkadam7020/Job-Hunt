@@ -1,0 +1,1 @@
+export const user_api_end_point=import.meta.env.VITE_API_URL;

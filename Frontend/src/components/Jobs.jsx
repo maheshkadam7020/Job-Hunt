@@ -1,9 +1,10 @@
 import React, { useEffect, useState } from "react";
 import FilterCard from "./FilterCard";
-import OnlyJobs from "./OnlyJobs";
+
 import { useSelector } from "react-redux";
 import useGetAllJobs from "./useGetAllJobs";
 import { motion } from "framer-motion";
+import OnlyJobs from "./Onlyjobs";
 const Jobs = () => {
   useGetAllJobs();
 

@@ -12,13 +12,14 @@ import { Button } from "./ui/button";
 import axios from "axios";
 import { user_api_end_point } from "./utils/constant";
 import { toast } from "sonner";
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { setSingleJob } from "@/redux/jobSlice";
 import { useDispatch, useSelector } from "react-redux";
 import daysAgoFunction from "./utils/postdate";
 
 
 const Details = () => {
+  const navigate=useNavigate();
   const { singlejob } = useSelector((store) => store.job);
   const { user } = useSelector((store) => store.auth);
   const isApplied = singlejob?.applications?.some(
@@ -68,6 +69,10 @@ const Details = () => {
 
   const applyjob=async(jobid)=>{
     try {
+      if(!user)
+      {
+          navigate('/login');
+      }
     const resp = await axios.get(
       `${user_api_end_point}/applyjob/${jobid}`,
       {

@@ -78,7 +78,7 @@ const AppliedjobTable = () => {
   user?.role === "student" && (
     <div className="w-full flex justify-center px-4 py-6">
       <div className="w-full max-w-7xl rounded-3xl border border-gray-200 bg-white shadow-lg overflow-hidden">
-        <div className="flex items-center justify-between px-4 sm:px-6 py-5 border-b bg-gradient-to-r from-blue-50 to-indigo-50">
+        <div className="flex items-center justify-between px-4 sm:px-6 py-5 border-b bg-linear-to-r from-blue-50 to-indigo-50">
           <div>
             <h2 className="text-xl sm:text-2xl font-bold text-gray-800">
               Applied Jobs

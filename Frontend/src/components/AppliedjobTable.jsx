@@ -26,6 +26,7 @@ import { toast } from "sonner";
 const AppliedjobTable = () => {
   const { application } = useSelector((store) => store.job);
   const dispatch = useDispatch();
+  const {user}= useSelector((store)=>store.auth)
 
   const [currentPage, setCurrentPage] = useState(1);
   const jobsPerPage = 5;
@@ -74,6 +75,8 @@ const AppliedjobTable = () => {
   };
 
   return (
+    {
+      if(user.role==="student") && (
     <div className="w-full flex justify-center px-4 py-6">
       <div className="w-full max-w-7xl rounded-3xl border border-gray-200 bg-white shadow-lg overflow-hidden">
         <div className="flex items-center justify-between px-4 sm:px-6 py-5 border-b bg-gradient-to-r from-blue-50 to-indigo-50">
@@ -231,6 +234,8 @@ const AppliedjobTable = () => {
         )}
       </div>
     </div>
+      )
+      }
   );
 };
 

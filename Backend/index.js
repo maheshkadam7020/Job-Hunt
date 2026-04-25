@@ -22,16 +22,14 @@ app.use(cookieParser());
 
 const port = process.env.PORT || 8000;
 
-app.get('/home',(req,resp)=>{
-    return resp.status(200).json({
-        message:"i am coming from backend",
-        succuss:true
-    })
-})
+
  app.use("/api",userRoute);
  app.use("/api",companyroute);
  app.use("/api",jobroute);
  app.use("/api",applicationroute);
+ app.get("/api/health", (req, res) => {
+  res.status(200).send("OK");
+});
 
 app.listen(port,()=>
 {

@@ -133,7 +133,7 @@ const Details = () => {
                   />
                 </Avatar>
 
-                <h1 className="text-xl sm:text-3xl lg:text-4xl font-bold text-gray-800 break-words">
+                <h1 className="text-xl sm:text-3xl lg:text-4xl font-bold text-gray-800 break-word">
                   {singlejob?.title}
                 </h1>
               </div>

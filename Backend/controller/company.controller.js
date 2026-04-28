@@ -1,4 +1,6 @@
 import { company } from "../model/company.model.js";
+import { job } from "../model/job.model.js";
+import { application } from "../model/application.model.js";
 import cloudinary from "../utils/Cloudinary.js";
 import getDataUri from "../utils/datauri.js";
 export const registerCompany = async (req, resp) => {
@@ -120,3 +122,35 @@ export const updatecompany=async (req,resp)=>
             success:true
         })
 }
+
+export const deleteCompany = async (req, res) => {
+  try {
+    const companyId = req.params.id;
+
+    
+    const jobs = await job.find({ company: companyId });
+
+    const jobIds = jobs.map((j) => j._id);
+
+    
+    await application.deleteMany({ job: { $in: jobIds } });
+
+    
+    await job.deleteMany({ company: companyId });
+
+    
+    await company.findByIdAndDelete(companyId);
+
+    return res.status(200).json({
+      message: "Company and related data deleted",
+      success: true
+    });
+  } catch (err) {
+    console.log(err);
+
+    return res.status(500).json({
+      message: "Delete failed",
+      success: false,
+    });
+  }
+};

@@ -1,4 +1,5 @@
 import { job } from "../model/job.model.js";
+import { application } from "../model/application.model.js";
 
 export const postjob = async (req, resp) => {
   try {
@@ -151,3 +152,34 @@ export const getadminjobs=async (req,resp)=>
         console.log(error)
     }
 }
+export const deleteJob = async (req, res) => {
+  try {
+    const jobId = req.params.id;
+
+    const deletedJob = await job.findByIdAndDelete(jobId);
+
+    if(deleteJob)
+    {
+      await application.deleteMany({ job: jobId });
+    }
+
+    if (!deletedJob) {
+      return res.status(404).json({
+        message: "Job not found",
+        success: false,
+      });
+    }
+
+    return res.status(200).json({
+      message: "Job and all applications deleted",
+      success: true,
+    });
+  } catch (error) {
+    console.log(error);
+
+    return res.status(500).json({
+      message: "Delete failed",
+      success: false,
+    });
+  }
+};

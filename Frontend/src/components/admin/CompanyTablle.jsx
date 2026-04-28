@@ -1,4 +1,6 @@
 import React, { useEffect, useState } from "react";
+import axios from "axios";
+import { toast } from "sonner";
 import {
   Table,
   TableBody,
@@ -10,15 +12,11 @@ import {
 } from "../ui/table";
 import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
 import { Popover, PopoverContent, PopoverTrigger } from "../ui/popover";
-import {
-  Edit2,
-  MoreHorizontal,
-  Building2,
-  CalendarDays,
-} from "lucide-react";
+import { Edit2, MoreHorizontal, Building2, CalendarDays } from "lucide-react";
 import { Button } from "../ui/button";
 import { useNavigate } from "react-router-dom";
 import { useSelector } from "react-redux";
+import { user_api_end_point } from "../utils/constant";
 
 const CompanyTablle = ({ companies }) => {
   const navigate = useNavigate();
@@ -32,14 +30,33 @@ const CompanyTablle = ({ companies }) => {
         return true;
       }
 
-      return company?.name
-        ?.toLowerCase()
-        .includes(searchText.toLowerCase());
+      return company?.name?.toLowerCase().includes(searchText.toLowerCase());
     });
 
     setFilter(filteredCompany);
   }, [companies, searchText]);
 
+  const handleDelete = async (id) => {
+    try {
+      if (!window.confirm("Delete this job and all applications?")) return;
+
+      const res = await axios.delete(
+        `${user_api_end_point}/company/delete/${id}`,
+        {
+          withCredentials: true,
+        },
+      );
+
+      if (res.data.success) {
+        toast.success("Company deleted successfully");
+        navigate("/admin/company");
+
+        setFilter((prev) => prev.filter((c) => c._id !== id));
+      }
+    } catch (error) {
+      toast.error("Failed to delete company");
+    }
+  };
   return (
     <div className="w-full rounded-2xl border bg-white shadow-sm overflow-hidden">
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 p-4 border-b">
@@ -89,7 +106,6 @@ const CompanyTablle = ({ companies }) => {
                       <h3 className="font-semibold text-gray-800">
                         {company.name}
                       </h3>
-                      
                     </div>
                   </div>
                 </TableCell>
@@ -129,6 +145,15 @@ const CompanyTablle = ({ companies }) => {
                         >
                           <Edit2 className="h-4 w-4" />
                           Edit
+                        </button>
+
+                        <button
+                          onClick={() => {
+                            handleDelete(company._id);
+                          }}
+                          className="flex items-center gap-2 rounded-lg px-3 py-2 text-sm text-red-600 hover:bg-red-50 transition"
+                        >
+                          🗑 Delete
                         </button>
                       </div>
                     </PopoverContent>

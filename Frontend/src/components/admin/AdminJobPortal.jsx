@@ -22,6 +22,9 @@ import {
 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { useSelector } from "react-redux";
+import { toast } from "sonner";
+import axios from "axios";
+import { user_api_end_point } from "../utils/constant";
 
 const AdminJobTable = ({ jobs }) => {
   const navigate = useNavigate();
@@ -43,6 +46,25 @@ const AdminJobTable = ({ jobs }) => {
 
     setFilter(filteredJob);
   }, [jobs, searchText]);
+
+  const handleDeleteJob = async (id) => {
+    try {
+      if (!window.confirm("Delete this job and all applications?")) return;
+
+      const res = await axios.delete(`${user_api_end_point}/job/delete/${id}`, {
+        withCredentials: true,
+      });
+
+      if (res.data.success) {
+        toast.success(res.data.message);
+
+        setFilter((prev) => prev.filter((job) => job._id !== id));
+      }
+    } catch (error) {
+      console.log(error);
+      toast.error("Delete failed");
+    }
+  };
 
   return (
     <div className="w-full rounded-2xl border bg-white shadow-sm overflow-hidden">
@@ -159,11 +181,23 @@ const AdminJobTable = ({ jobs }) => {
                       <PopoverContent className="w-44 p-2">
                         <div className="flex flex-col gap-1">
                           <button
-                            onClick={() => navigate(`/admin/applicants/${job._id}`)}
+                            onClick={() =>
+                              navigate(`/admin/applicants/${job._id}`)
+                            }
                             className="flex items-center gap-2 rounded-lg px-3 py-2 text-sm hover:bg-gray-100 transition"
                           >
                             <Eye className="h-4 w-4" />
                             Applicants
+                          </button>
+
+                          <button
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              handleDeleteJob(job._id);
+                            }}
+                            className="text-red-600 hover:bg-red-50 px-3 py-2 rounded-lg"
+                          >
+                            🗑 Delete
                           </button>
                         </div>
                       </PopoverContent>
